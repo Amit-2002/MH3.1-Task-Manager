@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 function TaskInput() {
   const [taskArr, setTask] = useState([]);
+
   const [formData, setFormData] = useState({
     title: "",
     descryption: "",
@@ -9,7 +10,9 @@ function TaskInput() {
     status: "",
   });
 
-            // handleOnChange
+  const [editting, setEditting] = useState();
+
+                // handleOnChange
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData((pre) => ({ ...pre, [name]: value }));
@@ -29,12 +32,33 @@ function TaskInput() {
     setTask(prevArr => prevArr.filter(currTask => prevArr.indexOf(currTask) !== index));
   }
 
-  // taskArr.filter(t => taskArr.indexOf(t) !== index);
+                    // handleEdit
+  const handleEdit = (i) => {
+    setEditting(i);
+    console.log(taskArr[i]);
+    setFormData({
+      title: taskArr[i].title,
+      descryption: taskArr[i].descryption,
+      priority: taskArr[i].priority,
+      status: taskArr[i].status
+    });
+  }
+
+
+                    // handleUpdate
+  const handleUpdate = (e) => {
+    e.preventDefault();
+    console.log(editting);
+    setTask(taskArr.map((task, indx) => indx === editting ? {...task, formData} : task));
+    setFormData({ title: "", descryption: "", priority: "", status: "" });
+    setEditting(null);
+  }
+  
 
   return (
     <>              
                           {/* form input */}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={editting >= 0 ? handleUpdate : handleSubmit}>
         <input
           type="text"
           placeholder="enter task"
@@ -85,7 +109,7 @@ function TaskInput() {
         <br />
         <br />
 
-        <button type="submit">Add</button>
+        <button type="submit">{editting ? "Update Task" : "Add Task"}</button>
     </form>
 
                           {/* display task */}
@@ -95,6 +119,8 @@ function TaskInput() {
             <DisplayTask 
             i={index} title={t.title} des={t.descryption} priority={t.priority} status={t.status}
             handleDelete={handleDelete}
+            handleEdit={handleEdit}
+            task={t}
             />
         )
     })
@@ -107,7 +133,7 @@ export default TaskInput;
 
 
 // display task component
-function DisplayTask({i, title, des, priority, status, handleDelete}){
+function DisplayTask({i, title, des, priority, status, handleDelete, handleEdit, task}){
   return(
     <div>
       <h2>Title : {title}</h2>
@@ -115,7 +141,7 @@ function DisplayTask({i, title, des, priority, status, handleDelete}){
       <h4>Priority : {priority}</h4>
       <h4>Status : {status}</h4>
       <button onClick={() => handleDelete(i)}>Delete</button>
-      <button>Edit</button>
+      <button onClick={() => handleEdit(i)}>Edit</button>
     </div>
   )
 }
