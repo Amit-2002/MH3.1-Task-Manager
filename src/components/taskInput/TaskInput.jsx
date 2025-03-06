@@ -49,7 +49,7 @@ function TaskInput() {
   const handleUpdate = (e) => {
     e.preventDefault();
     console.log(editting);
-    setTask(taskArr.map((task, indx) => indx === editting ? {...task, formData} : task));
+    setTask(taskArr.map((task, indx) => indx === editting ? {...task, ...formData} : task));
     setFormData({ title: "", descryption: "", priority: "", status: "" });
     setEditting(null);
   }
@@ -58,7 +58,7 @@ function TaskInput() {
   return (
     <>              
                           {/* form input */}
-      <form onSubmit={editting >= 0 ? handleUpdate : handleSubmit}>
+      <form onSubmit={Number.isInteger(editting) ? handleUpdate : handleSubmit}>
         <input
           type="text"
           placeholder="enter task"
@@ -109,7 +109,7 @@ function TaskInput() {
         <br />
         <br />
 
-        <button type="submit">{editting ? "Update Task" : "Add Task"}</button>
+        <button type="submit">{Number.isInteger(editting) ? "Update Task" : "Add Task"}</button>
     </form>
 
                           {/* display task */}
