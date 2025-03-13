@@ -1,0 +1,78 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.taskContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.taskContainer{
+    border: 2px solid red;
+}
+
+.descryption{
+    font-size: 20px;
+    display: flex;
+    gap: 20px;
+
+}
+
+
+.btns{
+    display: flex;
+    gap: 10px;
+}
+.btns button{
+    width: 50px;
+    font-size: 12px;
+    padding: 8px 8px;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+}
+.btns button:hover{
+    opacity: 0.5;
+}
+.btns :nth-child(1){
+    background: #d54b4b;
+}
+.btns :nth-child(2){
+    background: #3c9c3c;
+}
+
+
+                            /* pagination component stylling */
+.pagesBtnCon{
+    border: 1px solid blue;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.pagesBtnCon > button{
+    background: #3c9c3c;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 2px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+.pagesBtnCon > button:hover{
+    opacity: 0.5;
+}
+
+/* .pagesBtnCon button:first-child,
+.pagesBtnCon button:last-child{
+    background: green;
+} */
+
+.activePageBtn {
+    opacity: 0.5;
+}

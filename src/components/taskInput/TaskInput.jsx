@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import styles from "./taskInput.module.css";
 
 function TaskInput() {
   const [taskArr, setTask] = useState([]);
@@ -12,13 +13,13 @@ function TaskInput() {
 
   const [editting, setEditting] = useState();
 
-                // handleOnChange
+  // handleOnChange
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData((pre) => ({ ...pre, [name]: value }));
   }
 
-                // handleOnSubmit
+  // handleOnSubmit
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("form submitted");
@@ -27,37 +28,22 @@ function TaskInput() {
   };
 
 
-                  // handleDelete
-  const handleDelete = (index) => {
-    setTask(prevArr => prevArr.filter(currTask => prevArr.indexOf(currTask) !== index));
-  }
-
-                    // handleEdit
-  const handleEdit = (i) => {
-    setEditting(i);
-    console.log(taskArr[i]);
-    setFormData({
-      title: taskArr[i].title,
-      descryption: taskArr[i].descryption,
-      priority: taskArr[i].priority,
-      status: taskArr[i].status
-    });
-  }
-
-
-                    // handleUpdate
+  // handleUpdate
   const handleUpdate = (e) => {
     e.preventDefault();
     console.log(editting);
-    setTask(taskArr.map((task, indx) => indx === editting ? {...task, ...formData} : task));
+    setTask(
+      taskArr.map((task, indx) =>
+        indx === editting ? { ...task, ...formData } : task
+      )
+    );
     setFormData({ title: "", descryption: "", priority: "", status: "" });
     setEditting(null);
-  }
-  
+  };
 
   return (
-    <>              
-                          {/* form input */}
+    <>
+      {/* form input */}
       <form onSubmit={Number.isInteger(editting) ? handleUpdate : handleSubmit}>
         <input
           type="text"
@@ -109,39 +95,135 @@ function TaskInput() {
         <br />
         <br />
 
-        <button type="submit">{Number.isInteger(editting) ? "Update Task" : "Add Task"}</button>
-    </form>
+        <button type="submit">
+          {Number.isInteger(editting) ? "Update Task" : "Add Task"}
+        </button>
+      </form>
 
-                          {/* display task */}
-    {taskArr.length !==0 ? 
-    taskArr.map((t,index) => {
-        return (
-            <DisplayTask 
-            i={index} title={t.title} des={t.descryption} priority={t.priority} status={t.status}
-            handleDelete={handleDelete}
-            handleEdit={handleEdit}
-            task={t}
-            />
-        )
-    })
-    : ""}
+
+      {/* pagination */}
+      {taskArr.length > 0 ? <Pagination taskArr={taskArr} /> : ""}
     </>
   );
 }
 
 export default TaskInput;
 
-
 // display task component
-function DisplayTask({i, title, des, priority, status, handleDelete, handleEdit, task}){
-  return(
-    <div>
-      <h2>Title : {title}</h2>
-      <p>Descryption : {des}</p>
-      <h4>Priority : {priority}</h4>
-      <h4>Status : {status}</h4>
-      <button onClick={() => handleDelete(i)}>Delete</button>
-      <button onClick={() => handleEdit(i)}>Edit</button>
+function DisplayTask({
+  i,
+  title,
+  des,
+  priority,
+  status,
+  handleDelete,
+  handleEdit,
+}) {
+  return (
+    <div className={styles.taskContainer}>
+      <div className={styles.descryption}>
+        <h4>{title}</h4>
+        <p>{des}</p>
+        <h4>{priority}</h4>
+        <h4>{status}</h4>
+      </div>
+
+      <div className={styles.btns}>
+        <button onClick={() => handleDelete(i)}>Delete</button>
+        <button onClick={() => handleEdit(i)}>Edit</button>
+      </div>
     </div>
-  )
+  );
+}
+
+// pagination component
+function Pagination({ taskArr }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [tasksPerPage, setTasksPerPage] = useState(5);
+  const indexOfLastTask = currentPage * tasksPerPage;
+  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+  const currentTasks = taskArr.slice(indexOfFirstTask, indexOfLastTask);
+  const totalPages = Math.ceil(taskArr.length / tasksPerPage);
+
+  // handleDelete
+  const handleDelete = (index) => {
+    setTask((prevArr) =>
+      prevArr.filter((currTask) => prevArr.indexOf(currTask) !== index)
+    );
+  };
+
+  // handleEdit
+  const handleEdit = (i) => {
+    setEditting(i);
+    console.log(taskArr[i]);
+    setFormData({
+      title: taskArr[i].title,
+      descryption: taskArr[i].descryption,
+      priority: taskArr[i].priority,
+      status: taskArr[i].status,
+    });
+  };
+
+
+  //handlePageClick
+  const handlePageClick = (pageNumber) => {
+    setCurrentPage((prev) => {
+      console.log(currentPage);
+      return pageNumber;
+    });
+  };
+
+  // handlePrevious
+  const handlePrevious = () => {
+    setCurrentPage((prev) => {
+      Math.max(prev - 1, 1);
+    });
+  };
+
+  // handleNext
+  const handleNext = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  return (
+    <>
+      {/* display task */}
+      {currentTasks.length !== 0
+        ? currentTasks.map((t, index) => {
+            return (
+              <DisplayTask
+                key={index}
+                i={index}
+                title={t.title}
+                des={t.descryption}
+                priority={t.priority}
+                status={t.status}
+                // handleDelete={handleDelete}
+                // handleEdit={handleEdit}
+              />
+            );
+          })
+        : ""}
+
+      <div className={styles.pagesBtnCon}>
+        <button onClick={handlePrevious} disabled={currentPage === 1}>
+          &lt;
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            onClick={() => handlePageClick(i + 1)}
+            className={currentPage === i + 1 ? styles.activePageBtn : ""}
+          >
+            {i + 1}
+          </button>
+        ))}
+        <button
+          onClick={handleNext}
+          disabled={Boolean(currentPage === totalPages)}
+        >
+          &gt;
+        </button>
+      </div>
+    </>
+  );
 }
