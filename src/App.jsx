@@ -1,4 +1,5 @@
 import TaskInput from "./components/taskInput/TaskInput"
+import "./app.css";
 
 function App() {
   return (

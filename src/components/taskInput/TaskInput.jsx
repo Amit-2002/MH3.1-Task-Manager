@@ -27,6 +27,24 @@ function TaskInput() {
     setFormData({ title: "", descryption: "", priority: "", status: "" });
   };
 
+  // handleDelete
+  const handleDelete = (index) => {
+    setTask((prevArr) =>
+      prevArr.filter((currTask) => prevArr.indexOf(currTask) !== index)
+    );
+  };
+
+  // handleEdit
+  const handleEdit = (i) => {
+    setEditting(i);
+    console.log(taskArr[i]);
+    setFormData({
+      title: taskArr[i].title,
+      descryption: taskArr[i].descryption,
+      priority: taskArr[i].priority,
+      status: taskArr[i].status,
+    });
+  };
 
   // handleUpdate
   const handleUpdate = (e) => {
@@ -44,65 +62,70 @@ function TaskInput() {
   return (
     <>
       {/* form input */}
-      <form onSubmit={Number.isInteger(editting) ? handleUpdate : handleSubmit}>
-        <input
-          type="text"
-          placeholder="enter task"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-        />
-        <br />
-        <br />
+      <div className={styles.formCont}>
+        <form onSubmit={Number.isInteger(editting) ? handleUpdate : handleSubmit}>
+          <input
+            type="text"
+            placeholder="enter task"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+          />
+          <br />
+          <br />
 
-        <input
-          type="text"
-          placeholder="descryption"
-          name="descryption"
-          value={formData.descryption}
-          onChange={handleChange}
-        />
-        <br />
-        <br />
+          <input
+            type="text"
+            placeholder="descryption"
+            name="descryption"
+            value={formData.descryption}
+            onChange={handleChange}
+          />
+          <br />
+          <br />
 
-        <label htmlFor="priority">Select Priority:</label>
-        <select
-          name="priority"
-          id="priority"
-          value={formData.priority}
-          onChange={handleChange}
-        >
-          <option value="">Select..</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-        <br />
-        <br />
+          <label htmlFor="priority">Priority:</label>
+          <select
+            name="priority"
+            id="priority"
+            value={formData.priority}
+            onChange={handleChange}
+          >
+            <option value="">Select..</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+          <br />
+          <br />
 
-        <label htmlFor="status">Select Status:</label>
-        <select
-          name="status"
-          id="status"
-          value={formData.status}
-          onChange={handleChange}
-        >
-          <option value="">Select..</option>
-          <option value="pending">Pending</option>
-          <option value="in-progress">In Progress</option>
-          <option value="completed">Completed</option>
-        </select>
-        <br />
-        <br />
+          <label htmlFor="status">Status:</label>
+          <select
+            name="status"
+            id="status"
+            value={formData.status}
+            onChange={handleChange}
+          >
+            <option value="">Select..</option>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+          <br />
+          <br />
 
-        <button type="submit">
-          {Number.isInteger(editting) ? "Update Task" : "Add Task"}
-        </button>
-      </form>
-
+          <button type="submit">
+            {Number.isInteger(editting) ? "Update Task" : "Add Task"}
+          </button>
+        </form>
+      </div>
 
       {/* pagination */}
-      {taskArr.length > 0 ? <Pagination taskArr={taskArr} /> : ""}
+      {taskArr.length > 0 ? (
+        <Pagination taskArr={taskArr} handleDelete={handleDelete} handleEdit={handleEdit}/>
+      ) : (
+        ""
+      )}
     </>
   );
 }
@@ -137,33 +160,13 @@ function DisplayTask({
 }
 
 // pagination component
-function Pagination({ taskArr }) {
+function Pagination({ taskArr, handleDelete, handleEdit }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [tasksPerPage, setTasksPerPage] = useState(5);
+  const tasksPerPage = 5;
   const indexOfLastTask = currentPage * tasksPerPage;
   const indexOfFirstTask = indexOfLastTask - tasksPerPage;
   const currentTasks = taskArr.slice(indexOfFirstTask, indexOfLastTask);
   const totalPages = Math.ceil(taskArr.length / tasksPerPage);
-
-  // handleDelete
-  const handleDelete = (index) => {
-    setTask((prevArr) =>
-      prevArr.filter((currTask) => prevArr.indexOf(currTask) !== index)
-    );
-  };
-
-  // handleEdit
-  const handleEdit = (i) => {
-    setEditting(i);
-    console.log(taskArr[i]);
-    setFormData({
-      title: taskArr[i].title,
-      descryption: taskArr[i].descryption,
-      priority: taskArr[i].priority,
-      status: taskArr[i].status,
-    });
-  };
-
 
   //handlePageClick
   const handlePageClick = (pageNumber) => {
@@ -198,8 +201,8 @@ function Pagination({ taskArr }) {
                 des={t.descryption}
                 priority={t.priority}
                 status={t.status}
-                // handleDelete={handleDelete}
-                // handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
               />
             );
           })
@@ -209,6 +212,7 @@ function Pagination({ taskArr }) {
         <button onClick={handlePrevious} disabled={currentPage === 1}>
           &lt;
         </button>
+
         {Array.from({ length: totalPages }, (_, i) => (
           <button
             onClick={() => handlePageClick(i + 1)}
@@ -217,6 +221,7 @@ function Pagination({ taskArr }) {
             {i + 1}
           </button>
         ))}
+
         <button
           onClick={handleNext}
           disabled={Boolean(currentPage === totalPages)}
