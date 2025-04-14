@@ -23,8 +23,13 @@ function TaskInput() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("form submitted");
-    setTask((prev) => [...prev, formData]);
-    setFormData({ title: "", descryption: "", priority: "", status: "" });
+    if (formData.title !== "" && formData.descryption !== '' && formData.priority !== '' && formData.status !== ''){
+      setTask((prev) => [...prev, formData]);
+      setFormData({ title: "", descryption: "", priority: "", status: "" });
+    }
+    else{
+      alert("please fill all the fields..!")
+    }
   };
 
   // handleDelete
@@ -178,9 +183,7 @@ function Pagination({ taskArr, handleDelete, handleEdit }) {
 
   // handlePrevious
   const handlePrevious = () => {
-    setCurrentPage((prev) => {
-      Math.max(prev - 1, 1);
-    });
+    setCurrentPage((prev) => Math.max(prev-1, 1));
   };
 
   // handleNext
